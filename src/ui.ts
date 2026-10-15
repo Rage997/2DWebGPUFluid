@@ -1,6 +1,6 @@
 import type { FluidConfig } from './types.js';
 
-const SMALL_SCREEN = '(max-width: 640px)';
+const SMALL_SCREEN = '(max-width: 640px), (pointer: coarse) and (max-height: 500px)';
 
 const CONFIG_KEYS = [
   'simResolution',
@@ -69,6 +69,8 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
   const toggle = requireElement('panel-toggle');
   const randomBtn = requireButton('btn-random');
   const captureBtn = requireButton('btn-capture');
+  const pauseBtn = requireButton('btn-pause');
+  const splatBtn = requireButton('btn-splat');
 
   const fields = new Map<keyof FluidConfig, Field>();
   for (const el of body.querySelectorAll('[data-key]')) {
@@ -82,7 +84,8 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
     });
   }
 
-  let collapsed = matchMedia(SMALL_SCREEN).matches;
+  const smallScreen = matchMedia(SMALL_SCREEN);
+  let collapsed = smallScreen.matches;
   let capturing = false;
 
   function readConfigValue(key: keyof FluidConfig, el: Control): void {
@@ -122,11 +125,16 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
   }
 
   function applyCollapsed() {
+    if (collapsed && body.contains(document.activeElement)) toggle.focus();
     panel.classList.toggle('is-collapsed', collapsed);
     toggle.setAttribute('aria-expanded', String(!collapsed));
-    toggle.textContent = collapsed ? 'Show' : 'Hide';
+    toggle.textContent = collapsed ? 'Controls' : 'Hide';
   }
 
+  function syncPause() {
+    pauseBtn.textContent = config.paused ? 'Resume' : 'Pause';
+    pauseBtn.setAttribute('aria-pressed', String(config.paused));
+  }
   function sync() {
     for (const [key, field] of fields) {
       const value = config[key];
@@ -136,6 +144,7 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
       if (output) output.textContent = formatValue(value);
     }
     updateDisabled();
+    syncPause();
     applyCollapsed();
   }
 
@@ -148,6 +157,7 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
     const field = fields.get(key);
     if (field?.output) field.output.textContent = formatValue(config[key]);
     updateDisabled();
+    syncPause();
     actions.change(key);
   }
 
@@ -156,6 +166,15 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
     applyCollapsed();
   }
   const onRandom = () => actions.random();
+  function onPause() {
+    config.paused = !config.paused;
+    actions.change('paused');
+    sync();
+  }
+  function onScreenChange() {
+    collapsed = smallScreen.matches;
+    applyCollapsed();
+  }
 
   async function onCapture() {
     if (capturing) return;
@@ -170,6 +189,11 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
   }
 
   function onKeyDown(event: KeyboardEvent) {
+    if (event.code === 'Escape' && !collapsed) {
+      collapsed = true;
+      applyCollapsed();
+      return;
+    }
     if (event.repeat) return;
     const target = event.target;
     if (target instanceof HTMLElement &&
@@ -181,6 +205,9 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
   toggle.addEventListener('click', onToggle);
   randomBtn.addEventListener('click', onRandom);
   captureBtn.addEventListener('click', onCapture);
+  pauseBtn.addEventListener('click', onPause);
+  splatBtn.addEventListener('click', onRandom);
+  smallScreen.addEventListener('change', onScreenChange);
   window.addEventListener('keydown', onKeyDown);
 
   sync();
@@ -192,6 +219,9 @@ export function setupUI(config: FluidConfig, actions: UIActions): UIHandle {
       toggle.removeEventListener('click', onToggle);
       randomBtn.removeEventListener('click', onRandom);
       captureBtn.removeEventListener('click', onCapture);
+      pauseBtn.removeEventListener('click', onPause);
+      splatBtn.removeEventListener('click', onRandom);
+      smallScreen.removeEventListener('change', onScreenChange);
       window.removeEventListener('keydown', onKeyDown);
     },
   };

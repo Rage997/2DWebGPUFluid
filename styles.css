@@ -66,6 +66,7 @@ html, body {
   font-size: 12px;
   pointer-events: none;
 }
+.help__touch { display: none; }
 .help kbd {
   display: inline-block;
   padding: 0 5px;
@@ -109,7 +110,10 @@ html, body {
   color: var(--text-dim);
 }
 
-#panel-toggle {
+.panel__quick { display: none; }
+
+#panel-toggle,
+.panel__quick button {
   padding: 4px 10px;
   border: 1px solid var(--panel-border);
   border-radius: 6px;
@@ -250,15 +254,48 @@ input:disabled, select:disabled {
 .actions button:hover:not(:disabled) { background: rgba(79, 140, 255, 0.3); }
 .actions button:disabled { opacity: 0.5; cursor: wait; }
 
-/* Small screens */
-@media (max-width: 640px) {
+/* Bottom controls leave the canvas open on phones, including landscape. */
+@media (max-width: 640px), (pointer: coarse) and (max-height: 500px) {
   .panel {
-    top: 8px;
-    right: 8px;
-    width: min(280px, calc(100vw - 16px));
+    top: auto;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    left: max(8px, env(safe-area-inset-left));
+    right: max(8px, env(safe-area-inset-right));
+    width: auto;
+    display: flex;
+    flex-direction: column-reverse;
   }
-  .panel__body { max-height: calc(100vh - 80px); }
-  .help { display: none; }
+  .panel__header { padding: 8px; }
+  .panel__quick { display: flex; gap: 6px; margin-left: auto; }
+  #panel-toggle, .panel__quick button { min-height: 44px; padding: 8px 12px; font-size: 14px; }
+  .panel__quick button[aria-pressed="true"] { background: var(--accent-soft); }
+  .panel__body {
+    max-height: calc(100vh - 140px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 140px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding-top: 12px;
+    overscroll-behavior: contain;
+  }
+  .row > label { font-size: 14px; }
+  .row--check { min-height: 44px; }
+  .row--check > label { display: flex; align-items: center; min-height: 44px; }
+  input[type="range"] { min-height: 44px; }
+  input[type="checkbox"] { width: 24px; height: 24px; }
+  select { min-height: 44px; font-size: 16px; }
+  input[type="color"], .actions button { min-height: 44px; }
+  .help {
+    top: max(12px, env(safe-area-inset-top));
+    bottom: auto;
+    left: max(8px, env(safe-area-inset-left));
+    right: max(8px, env(safe-area-inset-right));
+    text-align: center;
+  }
+  .help__desktop { display: none; }
+  .help__touch { display: inline; }
+  #status {
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    max-width: calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

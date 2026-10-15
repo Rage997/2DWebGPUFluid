@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
 <title>Fluid — WebGPU</title>
 <link rel="stylesheet" href="./styles.css">
@@ -15,6 +15,10 @@
 <aside id="panel" class="panel" aria-label="Fluid controls">
   <header class="panel__header">
     <h1 class="panel__title">Fluid</h1>
+    <div class="panel__quick" aria-label="Quick actions">
+      <button id="btn-pause" type="button" aria-pressed="false">Pause</button>
+      <button id="btn-splat" type="button">Splats</button>
+    </div>
     <button id="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-body">Hide</button>
   </header>
 
@@ -136,7 +140,8 @@
 </aside>
 
 <p class="help" id="help">
-  Drag to stir · <kbd>P</kbd> pause · <kbd>Space</kbd> splats · <kbd>H</kbd> controls
+  <span class="help__desktop">Drag to stir · <kbd>P</kbd> pause · <kbd>Space</kbd> splats · <kbd>H</kbd> controls</span>
+  <span class="help__touch">Tap for color · Drag with multiple fingers to stir</span>
 </p>
 
 <script type="module" src="./src/app.ts"></script>

@@ -4,11 +4,11 @@ Native WebGPU reimplementation of [Pavel Dobryakov's WebGL Fluid Simulation](htt
 
 ## Controls
 
-- Drag with the mouse or one or more fingers to inject color and momentum.
+- Drag with the mouse or one or more fingers to inject color and momentum. Touch or pen contact also adds color without dragging.
 - **P** toggles simulation pause. Input still adds splats while paused.
 - **Space** injects random splats.
-- **H**, or the panel's Show/Hide button, toggles controls. The panel starts collapsed on narrow screens.
-- Keyboard shortcuts do not intercept input while a form control has focus.
+- **H**, or the panel's Controls/Hide button, toggles controls. **Escape** closes the panel and returns focus to its toggle if a control was focused.
+- On narrow screens and short touch-screen landscape viewports, controls become a bottom panel with always-visible **Pause/Resume** and **Splats** buttons. The panel starts collapsed, uses larger touch targets, and leaves room for device safe areas. Its settings scroll independently.
 - **Save PNG** downloads the canvas image without the controls, at the current canvas backing resolution. Enable **Transparent background** for an RGBA PNG.
 - Separate simulation/dye resolutions let you trade flow detail and visual detail against GPU cost. The values specify the shorter texture dimension; the longer dimension follows the canvas aspect ratio, bounded by GPU limits. Resolution changes resample existing dye and velocity.
 - Density/velocity dissipation fade dye and damp motion; these are not physical diffusion/viscosity coefficients. Pressure controls retention of the prior pressure estimate; pressure iterations control the approximate solve. Curl reinforces vortices.

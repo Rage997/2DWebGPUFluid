@@ -70,7 +70,11 @@ canvas.addEventListener('pointerdown', event => {
   canvas.focus({ preventScroll: true });
   canvas.setPointerCapture(event.pointerId);
   const pos = position(event);
-  pointers.set(event.pointerId, { ...pos, color: color(), elapsed: 0 });
+  const pointer = { ...pos, color: color(), elapsed: 0 };
+  pointers.set(event.pointerId, pointer);
+  if (event.pointerType !== 'mouse') {
+    splats.push({ ...pos, dx: 0, dy: 0, color: pointer.color });
+  }
 });
 canvas.addEventListener('pointermove', event => {
   const pointer = pointers.get(event.pointerId);
