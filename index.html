@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Fluid — WebGPU</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<canvas id="fluid" tabindex="0" aria-label="Interactive fluid simulation. Drag to stir; P pauses, Space adds splats, H toggles controls."></canvas>
+
+<div id="status" role="status">Loading…</div>
+
+<aside id="panel" class="panel" aria-label="Fluid controls">
+  <header class="panel__header">
+    <h1 class="panel__title">Fluid</h1>
+    <button id="panel-toggle" type="button" aria-expanded="true" aria-controls="panel-body">Hide</button>
+  </header>
+
+  <form id="panel-body" class="panel__body" autocomplete="off">
+    <fieldset class="group">
+      <legend>Quality</legend>
+      <div class="row">
+        <label for="ctl-simResolution">Sim resolution</label>
+        <select id="ctl-simResolution" data-key="simResolution">
+          <option value="32">32</option>
+          <option value="64">64</option>
+          <option value="128">128</option>
+          <option value="256">256</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="ctl-dyeResolution">Dye resolution</label>
+        <select id="ctl-dyeResolution" data-key="dyeResolution">
+          <option value="128">128</option>
+          <option value="256">256</option>
+          <option value="512">512</option>
+          <option value="1024">1024</option>
+          <option value="2048">2048</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend>Simulation</legend>
+      <div class="row">
+        <label for="ctl-densityDissipation">Density dissipation</label>
+        <output id="out-densityDissipation" for="ctl-densityDissipation"></output>
+        <input id="ctl-densityDissipation" data-key="densityDissipation" type="range" min="0" max="4" step="0.05">
+      </div>
+      <div class="row">
+        <label for="ctl-velocityDissipation">Velocity dissipation</label>
+        <output id="out-velocityDissipation" for="ctl-velocityDissipation"></output>
+        <input id="ctl-velocityDissipation" data-key="velocityDissipation" type="range" min="0" max="4" step="0.05">
+      </div>
+      <div class="row">
+        <label for="ctl-pressure">Pressure</label>
+        <output id="out-pressure" for="ctl-pressure"></output>
+        <input id="ctl-pressure" data-key="pressure" type="range" min="0" max="1" step="0.01">
+      </div>
+      <div class="row">
+        <label for="ctl-pressureIterations">Pressure iterations</label>
+        <output id="out-pressureIterations" for="ctl-pressureIterations"></output>
+        <input id="ctl-pressureIterations" data-key="pressureIterations" type="range" min="1" max="60" step="1">
+      </div>
+      <div class="row">
+        <label for="ctl-curl">Curl (vorticity)</label>
+        <output id="out-curl" for="ctl-curl"></output>
+        <input id="ctl-curl" data-key="curl" type="range" min="0" max="50" step="1">
+      </div>
+      <div class="row">
+        <label for="ctl-splatRadius">Splat radius</label>
+        <output id="out-splatRadius" for="ctl-splatRadius"></output>
+        <input id="ctl-splatRadius" data-key="splatRadius" type="range" min="0.01" max="1" step="0.01">
+      </div>
+      <div class="row">
+        <label for="ctl-splatForce">Splat force</label>
+        <output id="out-splatForce" for="ctl-splatForce"></output>
+        <input id="ctl-splatForce" data-key="splatForce" type="range" min="0" max="20000" step="100">
+      </div>
+      <div class="row row--check">
+        <label for="ctl-colorful">Colorful splats</label>
+        <input id="ctl-colorful" data-key="colorful" type="checkbox">
+      </div>
+      <div class="row row--check">
+        <label for="ctl-shading">Shading</label>
+        <input id="ctl-shading" data-key="shading" type="checkbox">
+      </div>
+      <div class="row row--check">
+        <label for="ctl-paused">Paused</label>
+        <input id="ctl-paused" data-key="paused" type="checkbox">
+      </div>
+    </fieldset>
+
+    <fieldset class="group">
+      <legend>Appearance</legend>
+      <div class="row row--check">
+        <label for="ctl-bloom">Bloom</label>
+        <input id="ctl-bloom" data-key="bloom" type="checkbox">
+      </div>
+      <div class="row">
+        <label for="ctl-bloomIntensity">Bloom intensity</label>
+        <output id="out-bloomIntensity" for="ctl-bloomIntensity"></output>
+        <input id="ctl-bloomIntensity" data-key="bloomIntensity" type="range" min="0" max="3" step="0.05">
+      </div>
+      <div class="row">
+        <label for="ctl-bloomThreshold">Bloom threshold</label>
+        <output id="out-bloomThreshold" for="ctl-bloomThreshold"></output>
+        <input id="ctl-bloomThreshold" data-key="bloomThreshold" type="range" min="0" max="1" step="0.01">
+      </div>
+      <div class="row row--check">
+        <label for="ctl-sunrays">Sun rays</label>
+        <input id="ctl-sunrays" data-key="sunrays" type="checkbox">
+      </div>
+      <div class="row">
+        <label for="ctl-sunraysWeight">Sun rays weight</label>
+        <output id="out-sunraysWeight" for="ctl-sunraysWeight"></output>
+        <input id="ctl-sunraysWeight" data-key="sunraysWeight" type="range" min="0" max="3" step="0.05">
+      </div>
+      <div class="row">
+        <label for="ctl-background">Background</label>
+        <input id="ctl-background" data-key="background" type="color">
+      </div>
+      <div class="row row--check">
+        <label for="ctl-transparent">Transparent background</label>
+        <input id="ctl-transparent" data-key="transparent" type="checkbox">
+      </div>
+    </fieldset>
+
+    <div class="actions">
+      <button id="btn-random" type="button">Random splats</button>
+      <button id="btn-capture" type="button">Save PNG</button>
+    </div>
+  </form>
+</aside>
+
+<p class="help" id="help">
+  Drag to stir · <kbd>P</kbd> pause · <kbd>Space</kbd> splats · <kbd>H</kbd> controls
+</p>
+
+<script type="module" src="./src/app.ts"></script>
+</body>
+</html>
