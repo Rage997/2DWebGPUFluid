@@ -1,33 +1,6 @@
 # 2D WebGPU Fluid
 
-Native WebGPU reimplementation of [Pavel Dobryakov's WebGL Fluid Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation).
-
-## Run
-
-Requires **Node.js 24 or newer**
-
-```sh
-npm ci
-npm run dev
-```
-
-Open the localhost URL printed by Vite in a WebGPU-capable browser
-
-```sh
-npm run typecheck  # Strict TypeScript checking without emitting files
-npm run build      # Type check, then build static assets into dist/
-npm run preview    # Serve the production build locally
-```
-
-## GitHub Pages
-
-Live simulation: **https://niccolozuppichini.com/2DWebGPUFluid/**
-
-`.github/workflows/deploy-pages.yml` builds and deploys the static site on every push to `master`. It can also be run manually from **Actions → Deploy to GitHub Pages → Run workflow**. The build uses Node.js from `.nvmrc`, installs the lockfile with `npm ci`, and runs TypeScript checking before uploading `dist/`.
-
-In **Settings → Pages**, the deployment source must be **GitHub Actions**. HTTPS is required for WebGPU; use the HTTPS URL above. The domain is inherited from the account's Pages site. A WebGPU-capable browser and GPU are still required.
-
-Vite's `base: './'` keeps built asset URLs relative, so they work under the repository's `/2DWebGPUFluid/` path. To deploy a fork, enable Pages with GitHub Actions and use the URL shown in its Pages settings; update the workflow branch if the fork does not use `master`.
+Native WebGPU reimplementation of [Pavel Dobryakov's WebGL Fluid Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation). [Live demo](https://niccolozuppichini.com/2DWebGPUFluid/)
 
 ## Controls
 
@@ -62,4 +35,4 @@ Simulation fields use `rgba16float` textures. Stencil operations run in 8×8 com
 
 ## Attribution
 
-The numerical scheme is adapted from the MIT-licensed original by Pavel Dobryakov. Its copyright and license are retained in `LICENSE`. The original also references [GPU Gems, Chapter 38: Fast Fluid Dynamics Simulation on the GPU](https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu).
+The numerical scheme is adapted from the MIT-licensed original by Pavel Dobryakov. The original also references [GPU Gems, Chapter 38: Fast Fluid Dynamics Simulation on the GPU](https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-38-fast-fluid-dynamics-simulation-gpu) which was also reviewed for this project.
