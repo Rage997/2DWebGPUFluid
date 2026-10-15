@@ -1,6 +1,8 @@
 # 2D WebGPU Fluid
 
-Native WebGPU reimplementation of [Pavel Dobryakov's WebGL Fluid Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation). [Live demo](https://niccolozuppichini.com/2DWebGPUFluid/)
+Native WebGPU reimplementation of [Pavel Dobryakov's WebGL Fluid Simulation](https://github.com/PavelDoGreat/WebGL-Fluid-Simulation). 
+
+[Live demo](https://niccolozuppichini.com/2DWebGPUFluid/)
 
 ## Controls
 
